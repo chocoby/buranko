@@ -10,8 +10,9 @@ import (
 	"strings"
 	"text/template"
 
-	"os/exec"
 	"regexp"
+
+	pipeline "github.com/mattn/go-pipeline"
 )
 
 // A Command is an implementation of a buranko command
@@ -147,15 +148,16 @@ func doOutput() {
 }
 
 func GetBranchNameFromGitCommand() string {
-	// use https://github.com/mattn/go-shellwords
-	branchName, err := exec.Command(os.Getenv("SHELL"), "-c", "git rev-parse --abbrev-ref HEAD").Output()
+	out, err := pipeline.Output(
+		[]string{"git", "rev-parse", "--abbrev-ref", "HEAD"},
+	)
 
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	return string(branchName)
+	return string(out)
 }
 
 func Parse(branchName string) string {
