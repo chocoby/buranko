@@ -9,6 +9,9 @@ import (
 	"os"
 	"strings"
 	"text/template"
+
+	"os/exec"
+	"regexp"
 )
 
 // A Command is an implementation of a buranko command
@@ -52,37 +55,25 @@ func (c *Command) Usage() {
 var commands = []*Command{}
 
 func main() {
-
+	flag.String("output", "id", "Output ticket id")
 	flag.Usage = usage
 	flag.Parse()
 	log.SetFlags(0)
 
 	args := flag.Args()
+
 	if len(args) < 1 {
-		usage()
+		doOutput()
+		return
 	}
 
 	if args[0] == "help" {
 		help(args[1:])
 		return
 	}
-
-	for _, cmd := range commands {
-		if cmd.Name() == args[0] {
-			cmd.Flag.Usage = func() { cmd.Usage() }
-
-			cmd.Flag.Parse(args[1:])
-			args = cmd.Flag.Args()
-
-			os.Exit(cmd.Run(args))
-		}
-	}
-
-	fmt.Fprintf(os.Stderr, "buranko: unknown subcommand %q\nRun ' buranko help' for usage.\n", args[0])
-	os.Exit(2)
 }
 
-var usageTemplate = `buranko is a tool for 
+var usageTemplate = `buranko is a tool for
 
 Usage:
 
@@ -146,4 +137,37 @@ func help(args []string) {
 
 	fmt.Fprintf(os.Stderr, "Unknown help topic %#q.  Run 'buranko help'.\n", arg)
 	os.Exit(2) // failed at 'buranko help cmd'
+}
+
+func doOutput() {
+	branchName := GetBranchNameFromGitCommand()
+	ticketId := Parse(branchName)
+
+	fmt.Println(ticketId)
+}
+
+func GetBranchNameFromGitCommand() string {
+	// use https://github.com/mattn/go-shellwords
+	branchName, err := exec.Command(os.Getenv("SHELL"), "-c", "git rev-parse --abbrev-ref HEAD").Output()
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	return string(branchName)
+}
+
+func Parse(branchName string) string {
+	r := regexp.MustCompile(`feature\/(\d+)_.*`)
+
+	matches := r.FindStringSubmatch(branchName)
+
+	if len(matches) == 0 {
+		os.Exit(1)
+	}
+
+	ticketId := matches[1]
+
+	return ticketId
 }
