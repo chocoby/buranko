@@ -141,10 +141,36 @@ func help(args []string) {
 }
 
 func doOutput() {
-	branchName := GetBranchNameFromGitCommand()
+	branchName := ""
+
+	stat, _ := os.Stdin.Stat()
+	if (stat.Mode() & os.ModeCharDevice) == 0 {
+		branchName = GetBranchNameFromStdin()
+	} else {
+		branchName = GetBranchNameFromGitCommand()
+	}
+
 	ticketId := Parse(branchName)
 
 	fmt.Println(ticketId)
+}
+
+func GetBranchNameFromStdin() string {
+	out := ""
+
+	scanner := bufio.NewScanner(os.Stdin)
+
+	for scanner.Scan() {
+		out = scanner.Text()
+		break
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	return out
 }
 
 func GetBranchNameFromGitCommand() string {
