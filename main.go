@@ -10,8 +10,6 @@ import (
 	"strings"
 	"text/template"
 
-	"regexp"
-
 	pipeline "github.com/mattn/go-pipeline"
 )
 
@@ -184,18 +182,4 @@ func GetBranchNameFromGitCommand() string {
 	}
 
 	return string(out)
-}
-
-func Parse(branchName string) string {
-	r := regexp.MustCompile(`feature\/(\d+)_.*`)
-
-	matches := r.FindStringSubmatch(branchName)
-
-	if len(matches) == 0 {
-		os.Exit(1)
-	}
-
-	ticketId := matches[1]
-
-	return ticketId
 }
