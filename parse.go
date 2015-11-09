@@ -17,7 +17,7 @@ func NewParser() *Parser {
 	return &Parser{Id}
 }
 
-func (p *Parser) Parse(branchName string) string {
+func (parser *Parser) Parse(branchName string) *Parser {
 	r := regexp.MustCompile(`feature\/(\d+)_.*`)
 
 	matches := r.FindStringSubmatch(branchName)
@@ -26,11 +26,11 @@ func (p *Parser) Parse(branchName string) string {
 		os.Exit(1)
 	}
 
-	ticketId := matches[1]
+	parser.Id = matches[1]
 
-	return ticketId
+	return parser
 }
 
-func Parse(line string) string {
+func Parse(line string) *Parser {
 	return NewParser().Parse(line)
 }

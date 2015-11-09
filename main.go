@@ -146,7 +146,7 @@ func doOutput() {
 		branchName = GetBranchNameFromGitCommand()
 	}
 
-	ticketId := Parse(branchName)
+	ticketId := Parse(branchName).Id
 
 	fmt.Println(ticketId)
 }
