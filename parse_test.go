@@ -8,9 +8,9 @@ import (
 func TestParse(t *testing.T) {
 	testcases := []struct {
 		line     string
-		expected *Parser
+		expected *Branch
 	}{
-		{`feature/1234_foo`, &Parser{Id: "1234"}},
+		{`feature/1234_foo`, &Branch{FullName: "feature/1234_foo", Id: "1234"}},
 	}
 
 	for _, testcase := range testcases {
