@@ -11,6 +11,10 @@ import (
 	"text/template"
 )
 
+var (
+	output string
+)
+
 // A Command is an implementation of a buranko command
 type Command struct {
 	// Run runs the command.
@@ -52,7 +56,7 @@ func (c *Command) Usage() {
 var commands = []*Command{}
 
 func main() {
-	flag.String("output", "id", "Output ticket id")
+	flag.StringVar(&output, "output", "Id", "Output ticket id")
 	flag.Usage = usage
 	flag.Parse()
 	log.SetFlags(0)
@@ -146,7 +150,14 @@ func doOutput() {
 		branchName = GetBranchNameFromGitCommand()
 	}
 
-	ticketId := Parse(branchName).Id
+	branch := Parse(branchName)
 
-	fmt.Println(ticketId)
+	switch output {
+	case "FullName":
+		fmt.Print(branch.FullName)
+	case "Id":
+		fmt.Print(branch.Id)
+	default:
+		fmt.Print("")
+	}
 }
