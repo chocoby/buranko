@@ -155,8 +155,12 @@ func doOutput() {
 	switch output {
 	case "FullName":
 		fmt.Print(branch.FullName)
+	case "Action":
+		fmt.Print(branch.Action)
 	case "Id":
 		fmt.Print(branch.Id)
+	case "Name":
+		fmt.Print(branch.Name)
 	default:
 		fmt.Print("")
 	}

@@ -10,7 +10,7 @@ func TestParse(t *testing.T) {
 		line     string
 		expected *Branch
 	}{
-		{`feature/1234_foo`, &Branch{FullName: "feature/1234_foo", Id: "1234"}},
+		{`feature/1234_foo`, &Branch{FullName: "feature/1234_foo", Action: "feature", Id: "1234", Name: "foo"}},
 	}
 
 	for _, testcase := range testcases {
