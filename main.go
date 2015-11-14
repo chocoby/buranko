@@ -58,7 +58,7 @@ func (c *Command) Usage() {
 var commands = []*Command{}
 
 func main() {
-	flag.StringVar(&output, "output", "Id", "Output ticket id")
+	flag.StringVar(&output, "output", "Id", "Output field")
 	flag.Usage = usage
 	flag.Parse()
 	log.SetFlags(0)
@@ -81,18 +81,20 @@ func main() {
 	}
 }
 
-var usageTemplate = `buranko is a tool for
+var usageTemplate = `buranko is a tool for parse a git branch name
 
 Usage:
 
-	buranko command [arguments]
+    buranko commands [arguments]
 
 The commands are:
-{{range .}}
-	{{.Name | printf "%-11s"}} {{.Short}}{{end}}
+    help        Show this help
+    version     Output version information
 
-Use "buranko help [command]" for more information about a command.
-
+Options:
+    -output
+        Specify an output field.
+        Available fields are FullName, Action, Id, Name.
 `
 
 var helpTemplate = `usage: buranko {{.UsageLine}}
