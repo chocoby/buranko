@@ -5,20 +5,63 @@ import (
 )
 
 func Parse(fullName string) *Branch {
-	r := regexp.MustCompile(`(\S+)\/(\d+)_(\S+)`)
-
-	matches := r.FindStringSubmatch(fullName)
-
 	branch := NewBranch()
 
-	if len(matches) == 0 {
+	re := regexp.MustCompile(`(\S+)\/(\d+)_(\S+)`)
+	matches := re.FindStringSubmatch(fullName)
+
+	if len(matches) > 0 {
+		branch.FullName = fullName
+		branch.Action = matches[1]
+		branch.Id = matches[2]
+		branch.Name = matches[3]
+
 		return branch
 	}
 
-	branch.FullName = fullName
-	branch.Action = matches[1]
-	branch.Id = matches[2]
-	branch.Name = matches[3]
+	re = regexp.MustCompile(`(\S+)\/(\d+)-(\S+)`)
+	matches = re.FindStringSubmatch(fullName)
+
+	if len(matches) > 0 {
+		branch.FullName = fullName
+		branch.Action = matches[1]
+		branch.Id = matches[2]
+		branch.Name = matches[3]
+
+		return branch
+	}
+
+	re = regexp.MustCompile(`(\S+)\/(\d+)`)
+	matches = re.FindStringSubmatch(fullName)
+
+	if len(matches) > 0 {
+		branch.FullName = fullName
+		branch.Action = matches[1]
+		branch.Id = matches[2]
+
+		return branch
+	}
+
+	re = regexp.MustCompile(`(\S+)\/(\S+)`)
+	matches = re.FindStringSubmatch(fullName)
+
+	if len(matches) > 0 {
+		branch.FullName = fullName
+		branch.Action = matches[1]
+		branch.Name = matches[2]
+
+		return branch
+	}
+
+	re = regexp.MustCompile(`(\S+)`)
+	matches = re.FindStringSubmatch(fullName)
+
+	if len(matches) > 0 {
+		branch.FullName = fullName
+		branch.Name = matches[1]
+
+		return branch
+	}
 
 	return branch
 }
