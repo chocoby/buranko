@@ -15,6 +15,7 @@ const Version string = "0.1.0"
 
 var (
 	output string
+	ref    bool
 )
 
 // A Command is an implementation of a buranko command
@@ -59,6 +60,7 @@ var commands = []*Command{}
 
 func main() {
 	flag.StringVar(&output, "output", "Id", "Output field")
+	flag.BoolVar(&ref, "ref", false, "Add reference mark")
 	flag.Usage = usage
 	flag.Parse()
 	log.SetFlags(0)
@@ -95,6 +97,9 @@ Options:
     -output
         Specify an output field.
         Available fields are FullName, Action, Id, Name.
+
+    -ref
+        Add reference mark (#) when output id field.
 `
 
 var helpTemplate = `usage: buranko {{.UsageLine}}
@@ -171,7 +176,11 @@ func doOutput() {
 	case "Action":
 		fmt.Print(branch.Action)
 	case "Id":
-		fmt.Print(branch.Id)
+		if ref {
+			fmt.Print("#" + branch.Id)
+		} else {
+			fmt.Print(branch.Id)
+		}
 	case "Name":
 		fmt.Print(branch.Name)
 	default:
