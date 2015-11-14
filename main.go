@@ -11,6 +11,8 @@ import (
 	"text/template"
 )
 
+const Version string = "0.1.0"
+
 var (
 	output string
 )
@@ -70,6 +72,11 @@ func main() {
 
 	if args[0] == "help" {
 		help(args[1:])
+		return
+	}
+
+	if args[0] == "version" {
+		version()
 		return
 	}
 }
@@ -138,6 +145,10 @@ func help(args []string) {
 
 	fmt.Fprintf(os.Stderr, "Unknown help topic %#q.  Run 'buranko help'.\n", arg)
 	os.Exit(2) // failed at 'buranko help cmd'
+}
+
+func version() {
+	fmt.Fprintf(os.Stdout, "branko version v%s\n", Version)
 }
 
 func doOutput() {
