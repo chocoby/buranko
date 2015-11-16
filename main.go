@@ -176,7 +176,7 @@ func doOutput() {
 	case "Action":
 		fmt.Print(branch.Action)
 	case "Id":
-		if ref {
+		if ref && len(branch.Id) > 0 {
 			fmt.Print("#" + branch.Id)
 		} else {
 			fmt.Print(branch.Id)
