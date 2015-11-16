@@ -1,5 +1,7 @@
 # buranko
 
+[![Build Status](https://travis-ci.org/chocoby/buranko.svg?branch=master)](https://travis-ci.org/chocoby/buranko)
+
 A tool for parse a git branch name
 
 ## Usage
