@@ -72,8 +72,10 @@ fi
 To install, use `go get`:
 
 ```bash
-$ go get -d github.com/chocoby/buranko
+$ go get github.com/chocoby/buranko
 ```
+
+Or you can download a binary from [releases page](https://github.com/chocoby/buranko/releases) and place it in `$PATH` directory.
 
 ## Contribution
 
