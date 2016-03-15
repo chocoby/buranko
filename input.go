@@ -25,6 +25,7 @@ func GetBranchNameFromStdin() string {
 	return out
 }
 
+// TODO: Should move to git.go?
 func GetBranchNameFromGitCommand() string {
 	out, err := pipeline.Output(
 		[]string{"git", "rev-parse", "--abbrev-ref", "HEAD"},

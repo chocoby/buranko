@@ -14,8 +14,9 @@ import (
 const Version string = "0.1.0"
 
 var (
-	output string
-	ref    bool
+	output   string
+	ref      bool
+	reponame bool
 )
 
 // A Command is an implementation of a buranko command
@@ -61,6 +62,7 @@ var commands = []*Command{}
 func main() {
 	flag.StringVar(&output, "output", "Id", "Output field")
 	flag.BoolVar(&ref, "ref", false, "Add reference mark")
+	flag.BoolVar(&reponame, "reponame", false, "Add repository name")
 	flag.Usage = usage
 	flag.Parse()
 	log.SetFlags(0)
@@ -99,7 +101,10 @@ Options:
         Available fields are FullName, Action, Id, Name.
 
     -ref
-        Add reference mark (#) when output id field.
+        Add a reference mark (#) when output Id field.
+
+    -reponame
+        Output a repository name before Id field.
 `
 
 var helpTemplate = `usage: buranko {{.UsageLine}}
@@ -176,11 +181,24 @@ func doOutput() {
 	case "Action":
 		fmt.Print(branch.Action)
 	case "Id":
-		if ref && len(branch.Id) > 0 {
-			fmt.Print("#" + branch.Id)
-		} else {
-			fmt.Print(branch.Id)
+		output := []string{}
+
+		if reponame && len(branch.Id) > 0 {
+			ref = true
+
+			name := GetRepoName()
+			if len(name) > 0 {
+				output = append(output, name)
+			}
 		}
+
+		if ref && len(branch.Id) > 0 {
+			output = append(output, "#"+branch.Id)
+		} else {
+			output = append(output, branch.Id)
+		}
+
+		fmt.Print(strings.Join(output, ""))
 	case "Name":
 		fmt.Print(branch.Name)
 	default:
