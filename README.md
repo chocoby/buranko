@@ -30,6 +30,25 @@ $ echo 'feature/1234_foo-bar' | buranko
 1234
 ```
 
+## Configuration
+
+Configuration uses 'git-config' variables.
+
+***buranko.reponame***
+
+A repository name.
+To output a repository name, use `-reponame` option.
+
+This is useful for commit across the GitHub repository.
+
+```
+$ git config buranko.reponame foo-org/bar-repo
+$ git checkout -b feature/1234_foo-bar
+$ buranko -ref -reponame
+foo-org/bar-repo#1234
+```
+
+
 ## Fields
 
 * `FullName`: Full branch name
@@ -62,7 +81,7 @@ Add an issue id to commit comment using git hook.
 ```sh
 if [ "$2" == "" ]; then
     mv $1 $1.tmp
-    echo `buranko -ref` > $1
+    echo `buranko -ref -reponame` > $1
     cat $1.tmp >> $1
 fi
 ```
