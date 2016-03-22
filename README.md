@@ -70,7 +70,7 @@ foo-org/bar-repo#1234
 * `FullName`: `foo-bar`
 * `Name`: `foo-bar`
 
-More patterns at `parser_test.go`.
+More patterns at [`parser_test.go`](https://github.com/chocoby/buranko/blob/master/parser_test.go).
 
 ## Integrate with `prepare-commit-msg`
 
