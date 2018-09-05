@@ -53,6 +53,27 @@ func Parse(fullName string) *Branch {
 		return branch
 	}
 
+	re = regexp.MustCompile(`#(\d+)-(\S+)`)
+	matches = re.FindStringSubmatch(fullName)
+
+	if len(matches) > 0 {
+		branch.FullName = fullName
+		branch.Id = matches[1]
+		branch.Name = matches[2]
+
+		return branch
+	}
+
+	re = regexp.MustCompile(`(\d+)`)
+	matches = re.FindStringSubmatch(fullName)
+
+	if len(matches) > 0 {
+		branch.FullName = fullName
+		branch.Id = matches[1]
+
+		return branch
+	}
+
 	re = regexp.MustCompile(`(\S+)`)
 	matches = re.FindStringSubmatch(fullName)
 
