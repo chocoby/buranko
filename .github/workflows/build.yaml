@@ -23,5 +23,13 @@ jobs:
         uses: actions/setup-go@v1
         with:
           go-version: 1.x
+      - name: Setup env
+        # https://github.com/actions/setup-go/issues/14
+        run: |
+          echo "::set-env name=GOPATH::$(go env GOPATH)"
+          echo "::add-path::$(go env GOPATH)/bin"
+        shell: bash
       - name: Test
         run: make test
+      - name: Lint
+        run: make lint

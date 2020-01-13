@@ -4,6 +4,7 @@ import (
 	"regexp"
 )
 
+// Parse returns parsed branch name.
 func Parse(fullName string) *Branch {
 	branch := NewBranch()
 
@@ -13,7 +14,7 @@ func Parse(fullName string) *Branch {
 	if len(matches) > 0 {
 		branch.FullName = fullName
 		branch.Action = matches[1]
-		branch.Id = matches[2]
+		branch.ID = matches[2]
 		branch.Name = matches[3]
 
 		return branch
@@ -25,7 +26,7 @@ func Parse(fullName string) *Branch {
 	if len(matches) > 0 {
 		branch.FullName = fullName
 		branch.Action = matches[1]
-		branch.Id = matches[2]
+		branch.ID = matches[2]
 		branch.Name = matches[3]
 
 		return branch
@@ -37,7 +38,7 @@ func Parse(fullName string) *Branch {
 	if len(matches) > 0 {
 		branch.FullName = fullName
 		branch.Action = matches[1]
-		branch.Id = matches[2]
+		branch.ID = matches[2]
 
 		return branch
 	}
@@ -58,7 +59,7 @@ func Parse(fullName string) *Branch {
 
 	if len(matches) > 0 {
 		branch.FullName = fullName
-		branch.Id = matches[1]
+		branch.ID = matches[1]
 		branch.Name = matches[2]
 
 		return branch
@@ -69,7 +70,7 @@ func Parse(fullName string) *Branch {
 
 	if len(matches) > 0 {
 		branch.FullName = fullName
-		branch.Id = matches[1]
+		branch.ID = matches[1]
 
 		return branch
 	}

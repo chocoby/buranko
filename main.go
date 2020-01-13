@@ -11,7 +11,8 @@ import (
 	"text/template"
 )
 
-const Version string = "0.1.0"
+// Version returns release version
+const Version string = "1.0.0"
 
 var (
 	output   string
@@ -49,6 +50,7 @@ func (c *Command) Name() string {
 	return name
 }
 
+// Usage returns the commands usage.
 func (c *Command) Usage() {
 	fmt.Fprintf(os.Stderr, "usage: %s\n\n", c.UsageLine)
 	fmt.Fprintf(os.Stderr, "%s\n", strings.TrimSpace(c.Long))
@@ -60,7 +62,7 @@ func (c *Command) Usage() {
 var commands = []*Command{}
 
 func main() {
-	flag.StringVar(&output, "output", "Id", "Output field")
+	flag.StringVar(&output, "output", "ID", "Output field")
 	flag.BoolVar(&ref, "ref", false, "Add reference mark")
 	flag.BoolVar(&reponame, "reponame", false, "Add repository name")
 	flag.Usage = usage
@@ -98,13 +100,13 @@ The commands are:
 Options:
     -output
         Specify an output field.
-        Available fields are FullName, Action, Id, Name.
+        Available fields are FullName, Action, ID, Name.
 
     -ref
-        Add a reference mark (#) when output Id field.
+        Add a reference mark (#) when output ID field.
 
     -reponame
-        Output a repository name before Id field.
+        Output a repository name before ID field.
 `
 
 var helpTemplate = `usage: buranko {{.UsageLine}}
@@ -180,10 +182,10 @@ func doOutput() {
 		fmt.Print(branch.FullName)
 	case "Action":
 		fmt.Print(branch.Action)
-	case "Id":
+	case "ID":
 		output := []string{}
 
-		if reponame && len(branch.Id) > 0 {
+		if reponame && len(branch.ID) > 0 {
 			ref = true
 
 			name := GetRepoName()
@@ -192,10 +194,10 @@ func doOutput() {
 			}
 		}
 
-		if ref && len(branch.Id) > 0 {
-			output = append(output, "#"+branch.Id)
+		if ref && len(branch.ID) > 0 {
+			output = append(output, "#"+branch.ID)
 		} else {
-			output = append(output, branch.Id)
+			output = append(output, branch.ID)
 		}
 
 		fmt.Print(strings.Join(output, ""))

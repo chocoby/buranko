@@ -1,10 +1,12 @@
 package main
 
 import (
-	pipeline "github.com/mattn/go-pipeline"
 	"strings"
+
+	pipeline "github.com/mattn/go-pipeline"
 )
 
+// GetRepoName returns a configured repository name.
 func GetRepoName() string {
 	out, err := pipeline.Output(
 		[]string{"git", "config", "--get", "buranko.reponame"},
