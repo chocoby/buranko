@@ -3,14 +3,14 @@ package main
 var (
 	FullName string = ""
 	Action   string = ""
-	Id       string = ""
+	ID       string = ""
 	Name     string = ""
 )
 
 type Branch struct {
 	FullName string
 	Action   string
-	Id       string
+	ID       string
 	Name     string
 }
 
@@ -18,7 +18,7 @@ func NewBranch() *Branch {
 	return &Branch{
 		FullName: FullName,
 		Action:   Action,
-		Id:       Id,
+		ID:       ID,
 		Name:     Name,
 	}
 }

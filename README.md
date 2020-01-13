@@ -6,7 +6,7 @@ A tool for parse a git branch name
 
 ## Usage
 
-`buranko` prints the `id` field by default.
+`buranko` prints the `ID` field by default.
 
 ```
 $ git checkout -b feature/1234_foo-bar
@@ -53,7 +53,7 @@ foo-org/bar-repo#1234
 
 * `FullName`: Full branch name
 * `Action`: Action type
-* `Id`: Issue id
+* `ID`: Issue ID
 * `Name`: Name
 
 ## Parse patterns
@@ -62,7 +62,7 @@ foo-org/bar-repo#1234
 
 * `FullName`: `feature/1234_foo-bar`
 * `Action`: `feature`
-* `Id`: `1234`
+* `ID`: `1234`
 * `Name`: `foo-bar`
 
 ### `foo-bar`
@@ -74,7 +74,7 @@ More patterns at [`parser_test.go`](https://github.com/chocoby/buranko/blob/mast
 
 ## Integrate with `prepare-commit-msg`
 
-Add an issue id to commit comment using git hook.
+Add an issue ID to commit comment using git hook.
 
 `GIT-REPO/.git/hooks/prepare-commit-msg`
 
