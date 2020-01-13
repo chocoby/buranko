@@ -1,12 +1,12 @@
 # buranko
 
-[![Build Status](https://travis-ci.org/chocoby/buranko.svg?branch=master)](https://travis-ci.org/chocoby/buranko)
+![Build Status](https://github.com/chocoby/buranko/workflows/build/badge.svg?branch=master)
 
 A tool for parse a git branch name
 
 ## Usage
 
-`buranko` prints the `ID` field by default.
+`buranko` outputs the `ID` field by default.
 
 ```
 $ git checkout -b feature/1234_foo-bar
