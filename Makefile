@@ -1,5 +1,9 @@
+BIN := buranko
 VERBOSE_FLAG = $(if $(VERBOSE),-v)
 GOBIN ?= $(shell go env GOPATH)/bin
+
+.PHONY: all
+all: clean build
 
 testdeps:
 	go get -d -t $(VERBOSE_FLAG)
@@ -16,3 +20,12 @@ lint: $(GOBIN)/golint
 
 $(GOBIN)/golint:
 	cd && go get golang.org/x/lint/golint
+
+.PHONY: build
+build:
+	go build -o $(BIN)
+
+.PHONY: clean
+clean:
+	rm $(BIN)
+	go clean
