@@ -4,6 +4,7 @@ import (
 	"regexp"
 )
 
+// Parse returns parsed branch name.
 func Parse(fullName string) *Branch {
 	branch := NewBranch()
 

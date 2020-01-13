@@ -11,7 +11,8 @@ import (
 	"text/template"
 )
 
-const Version string = "0.1.0"
+// Version returns release version
+const Version string = "1.0.0"
 
 var (
 	output   string
@@ -49,6 +50,7 @@ func (c *Command) Name() string {
 	return name
 }
 
+// Usage returns the commands usage.
 func (c *Command) Usage() {
 	fmt.Fprintf(os.Stderr, "usage: %s\n\n", c.UsageLine)
 	fmt.Fprintf(os.Stderr, "%s\n", strings.TrimSpace(c.Long))

@@ -1,12 +1,13 @@
 package main
 
 var (
-	FullName string = ""
-	Action   string = ""
-	ID       string = ""
-	Name     string = ""
+	fullName string = ""
+	action   string = ""
+	id       string = ""
+	name     string = ""
 )
 
+// Branch is a branch information
 type Branch struct {
 	FullName string
 	Action   string
@@ -14,11 +15,12 @@ type Branch struct {
 	Name     string
 }
 
+// NewBranch returns Branch
 func NewBranch() *Branch {
 	return &Branch{
-		FullName: FullName,
-		Action:   Action,
-		ID:       ID,
-		Name:     Name,
+		FullName: fullName,
+		Action:   action,
+		ID:       id,
+		Name:     name,
 	}
 }

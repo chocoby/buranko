@@ -3,10 +3,12 @@ package main
 import (
 	"bufio"
 	"fmt"
-	pipeline "github.com/mattn/go-pipeline"
 	"os"
+
+	pipeline "github.com/mattn/go-pipeline"
 )
 
+// GetBranchNameFromStdin returns branch name from stdin.
 func GetBranchNameFromStdin() string {
 	out := ""
 
@@ -25,7 +27,7 @@ func GetBranchNameFromStdin() string {
 	return out
 }
 
-// TODO: Should move to git.go?
+// GetBranchNameFromGitCommand returns branch name from git command.
 func GetBranchNameFromGitCommand() string {
 	out, err := pipeline.Output(
 		[]string{"git", "rev-parse", "--abbrev-ref", "HEAD"},
