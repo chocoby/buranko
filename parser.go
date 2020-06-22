@@ -15,7 +15,7 @@ func Parse(fullName string) *Branch {
 		branch.FullName = fullName
 		branch.Action = matches[1]
 		branch.ID = matches[2]
-		branch.Name = matches[3]
+		branch.Description = matches[3]
 
 		return branch
 	}
@@ -27,7 +27,7 @@ func Parse(fullName string) *Branch {
 		branch.FullName = fullName
 		branch.Action = matches[1]
 		branch.ID = matches[2]
-		branch.Name = matches[3]
+		branch.Description = matches[3]
 
 		return branch
 	}
@@ -49,7 +49,7 @@ func Parse(fullName string) *Branch {
 	if len(matches) > 0 {
 		branch.FullName = fullName
 		branch.Action = matches[1]
-		branch.Name = matches[2]
+		branch.Description = matches[2]
 
 		return branch
 	}
@@ -60,7 +60,7 @@ func Parse(fullName string) *Branch {
 	if len(matches) > 0 {
 		branch.FullName = fullName
 		branch.ID = matches[1]
-		branch.Name = matches[2]
+		branch.Description = matches[2]
 
 		return branch
 	}
@@ -80,7 +80,7 @@ func Parse(fullName string) *Branch {
 
 	if len(matches) > 0 {
 		branch.FullName = fullName
-		branch.Name = matches[1]
+		branch.Description = matches[1]
 
 		return branch
 	}
