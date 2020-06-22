@@ -100,7 +100,7 @@ The commands are:
 Options:
     -output
         Specify an output field.
-        Available fields are FullName, Action, ID, Name.
+        Available fields are FullName, Action, ID, Description.
 
     -ref
         Add a reference mark (#) when output ID field.
@@ -201,8 +201,8 @@ func doOutput() {
 		}
 
 		fmt.Print(strings.Join(output, ""))
-	case "Name":
-		fmt.Print(branch.Name)
+	case "Description":
+		fmt.Print(branch.Description)
 	default:
 		fmt.Print("")
 	}

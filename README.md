@@ -54,7 +54,7 @@ foo-org/bar-repo#1234
 * `FullName`: Full branch name
 * `Action`: Action type
 * `ID`: Issue ID
-* `Name`: Name
+* `Description`: Description
 
 ## Parse patterns
 
@@ -63,12 +63,12 @@ foo-org/bar-repo#1234
 * `FullName`: `feature/1234_foo-bar`
 * `Action`: `feature`
 * `ID`: `1234`
-* `Name`: `foo-bar`
+* `Description`: `foo-bar`
 
 ### `foo-bar`
 
 * `FullName`: `foo-bar`
-* `Name`: `foo-bar`
+* `Description`: `foo-bar`
 
 More patterns at [`parser_test.go`](https://github.com/chocoby/buranko/blob/master/parser_test.go).
 
@@ -106,10 +106,6 @@ Or you can download a binary from [releases page](https://github.com/chocoby/bur
 1. Run `gofmt -s`
 1. Create a new Pull Request
 
-## License
+## GitHub
 
-[MIT License](http://chocoby.mit-license.org)
-
-## Author
-
-[Kenta Okamoto](https://github.com/chocoby)
+https://github.com/chocoby/buranko
