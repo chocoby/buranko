@@ -17,6 +17,7 @@ func TestParse(t *testing.T) {
 		{`feature/1234`, &Branch{FullName: "feature/1234", Action: "feature", ID: "1234", Name: ""}},
 		{`feature/foo`, &Branch{FullName: "feature/foo", Action: "feature", ID: "", Name: "foo"}},
 		{`#1234-foo-bar`, &Branch{FullName: "#1234-foo-bar", Action: "", ID: "1234", Name: "foo-bar"}},
+		{`JRA-1234`, &Branch{FullName: "JRA-1234", Action: "", ID: "1234", Name: ""}},
 		{`foo`, &Branch{FullName: "foo", Action: "", ID: "", Name: "foo"}},
 		{`foo-bar`, &Branch{FullName: "foo-bar", Action: "", ID: "", Name: "foo-bar"}},
 		{`1234`, &Branch{FullName: "1234", Action: "", ID: "1234", Name: ""}},
