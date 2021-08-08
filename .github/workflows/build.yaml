@@ -18,17 +18,11 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - name: Setup Go
-        uses: actions/setup-go@v1
+        uses: actions/setup-go@v2
         with:
-          go-version: 1.x
-      - name: Setup env
-        # https://github.com/actions/setup-go/issues/14
-        run: |
-          echo "::set-env name=GOPATH::$(go env GOPATH)"
-          echo "::add-path::$(go env GOPATH)/bin"
-        shell: bash
+          go-version: '^1.16'
       - name: Test
         run: make test
       - name: Lint
