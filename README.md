@@ -50,21 +50,6 @@ $ buranko -template
 foo-org/bar-repo#1234
 ```
 
-***buranko.reponame***
-
-A repository name.
-To output a repository name, use `-reponame` option.
-
-This is useful for commit across the GitHub repository.
-
-```
-$ git config buranko.reponame foo-org/bar-repo
-$ git checkout -b feature/1234_foo-bar
-$ buranko -ref -reponame
-foo-org/bar-repo#1234
-```
-
-
 ## Fields
 
 * `FullName`: Full branch name
@@ -97,7 +82,7 @@ Add an issue ID to commit comment using git hook.
 ```sh
 if [ "$2" == "" ]; then
     mv $1 $1.tmp
-    echo `buranko -template -ref -reponame` > $1
+    echo `buranko -template -ref` > $1
     cat $1.tmp >> $1
 fi
 ```
