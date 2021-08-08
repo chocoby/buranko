@@ -15,9 +15,10 @@ import (
 const Version string = "1.0.0"
 
 var (
-	output   string
-	ref      bool
-	reponame bool
+	output      string
+	ref         bool
+	reponame    bool
+	useTemplate bool
 )
 
 // A Command is an implementation of a buranko command
@@ -65,6 +66,7 @@ func main() {
 	flag.StringVar(&output, "output", "ID", "Output field")
 	flag.BoolVar(&ref, "ref", false, "Add reference mark")
 	flag.BoolVar(&reponame, "reponame", false, "Add repository name")
+	flag.BoolVar(&useTemplate, "template", false, "Use the configured template in the output")
 	flag.Usage = usage
 	flag.Parse()
 	log.SetFlags(0)
@@ -107,6 +109,9 @@ Options:
 
     -reponame
         Output a repository name before ID field.
+
+    -template
+        Use the configured template in the output.
 `
 
 var helpTemplate = `usage: buranko {{.UsageLine}}
@@ -176,6 +181,20 @@ func doOutput() {
 	}
 
 	branch := Parse(branchName)
+
+	templateText := GetTemplate()
+	if useTemplate && len(templateText) > 0 {
+		tmpl, err := template.New("Format").Parse(templateText)
+		if err != nil {
+			log.Fatal(err)
+		}
+		writer := new(strings.Builder)
+		tmpl.Execute(writer, branch)
+
+		fmt.Print(writer.String())
+
+		return
+	}
 
 	switch output {
 	case "FullName":

@@ -34,6 +34,22 @@ $ echo 'feature/1234_foo-bar' | buranko
 
 Configuration uses 'git-config' variables.
 
+***buranko.template***
+
+The template can use the values defined in the following Fields.
+
+This option is useful for pointing to issues in other GitHub repositories, or for software that requires a prefix in the issue number.
+
+```
+$ git checkout -b feature/1234_foo-bar
+$ git config buranko.template ABC-{{.ID}}
+$ buranko -template
+ABC-1234
+$ git config buranko.template foo-org/bar-repo#{{.ID}}
+$ buranko -template
+foo-org/bar-repo#1234
+```
+
 ***buranko.reponame***
 
 A repository name.
@@ -81,7 +97,7 @@ Add an issue ID to commit comment using git hook.
 ```sh
 if [ "$2" == "" ]; then
     mv $1 $1.tmp
-    echo `buranko -ref -reponame` > $1
+    echo `buranko -template -ref -reponame` > $1
     cat $1.tmp >> $1
 fi
 ```
