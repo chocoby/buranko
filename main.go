@@ -17,7 +17,6 @@ const Version string = "1.0.0"
 var (
 	output      string
 	ref         bool
-	reponame    bool
 	useTemplate bool
 )
 
@@ -65,7 +64,6 @@ var commands = []*Command{}
 func main() {
 	flag.StringVar(&output, "output", "ID", "Output field")
 	flag.BoolVar(&ref, "ref", false, "Add reference mark")
-	flag.BoolVar(&reponame, "reponame", false, "Add repository name")
 	flag.BoolVar(&useTemplate, "template", false, "Use the configured template in the output")
 	flag.Usage = usage
 	flag.Parse()
@@ -106,9 +104,6 @@ Options:
 
     -ref
         Add a reference mark (#) when output ID field.
-
-    -reponame
-        Output a repository name before ID field.
 
     -template
         Use the configured template in the output.
@@ -203,15 +198,6 @@ func doOutput() {
 		fmt.Print(branch.Action)
 	case "ID":
 		output := []string{}
-
-		if reponame && len(branch.ID) > 0 {
-			ref = true
-
-			name := GetRepoName()
-			if len(name) > 0 {
-				output = append(output, name)
-			}
-		}
 
 		if ref && len(branch.ID) > 0 {
 			output = append(output, "#"+branch.ID)
