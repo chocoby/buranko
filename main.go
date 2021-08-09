@@ -12,7 +12,7 @@ import (
 )
 
 // Version returns release version
-const Version string = "1.0.0"
+const Version string = "2.0.0"
 
 var (
 	output      string
