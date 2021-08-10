@@ -16,7 +16,6 @@ const Version string = "2.0.0"
 
 var (
 	output      string
-	ref         bool
 	useTemplate bool
 )
 
@@ -63,7 +62,6 @@ var commands = []*Command{}
 
 func main() {
 	flag.StringVar(&output, "output", "ID", "Output field")
-	flag.BoolVar(&ref, "ref", false, "Add reference mark")
 	flag.BoolVar(&useTemplate, "template", false, "Use the configured template in the output")
 	flag.Usage = usage
 	flag.Parse()
@@ -101,9 +99,6 @@ Options:
     -output
         Specify an output field.
         Available fields are FullName, Action, ID, LinkID, Description.
-
-    -ref
-        Add a reference mark (#) when output ID field.
 
     -template
         Use the configured template in the output.
@@ -197,15 +192,7 @@ func doOutput() {
 	case "Action":
 		fmt.Print(branch.Action)
 	case "ID":
-		output := []string{}
-
-		if ref && len(branch.ID) > 0 {
-			output = append(output, "#"+branch.ID)
-		} else {
-			output = append(output, branch.ID)
-		}
-
-		fmt.Print(strings.Join(output, ""))
+		fmt.Print(branch.ID)
 	case "LinkID":
 		fmt.Print(branch.LinkID())
 	case "Description":

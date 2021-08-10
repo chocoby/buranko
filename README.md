@@ -12,13 +12,13 @@ A tool for parse a git branch name
 $ git checkout -b feature/1234_foo-bar
 $ buranko
 1234
-$ buranko -ref
-#1234
 ```
 
 Specify an output field.
 
 ```
+$ buranko -output LinkID
+#1234
 $ buranko -output Name
 foo-bar
 ```
@@ -84,7 +84,7 @@ Add an issue ID to commit comment using git hook.
 ```sh
 if [ "$2" == "" ]; then
     mv $1 $1.tmp
-    echo `buranko -template -ref` > $1
+    echo `buranko -output LinkID -template` > $1
     cat $1.tmp >> $1
 fi
 ```
