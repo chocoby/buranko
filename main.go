@@ -12,7 +12,7 @@ import (
 )
 
 // Version returns release version
-const Version string = "1.0.0"
+const Version string = "2.0.0"
 
 var (
 	output      string
@@ -100,7 +100,7 @@ The commands are:
 Options:
     -output
         Specify an output field.
-        Available fields are FullName, Action, ID, Description.
+        Available fields are FullName, Action, ID, LinkID, Description.
 
     -ref
         Add a reference mark (#) when output ID field.
@@ -206,6 +206,8 @@ func doOutput() {
 		}
 
 		fmt.Print(strings.Join(output, ""))
+	case "LinkID":
+		fmt.Print(branch.LinkID())
 	case "Description":
 		fmt.Print(branch.Description)
 	default:
