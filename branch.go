@@ -24,3 +24,9 @@ func NewBranch() *Branch {
 		Description: description,
 	}
 }
+
+// LinkID returns ID with a leading #
+// This can be used to link the issue ID to the commit message
+func (b *Branch) LinkID() string {
+	return "#" + b.ID
+}

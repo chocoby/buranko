@@ -55,6 +55,7 @@ foo-org/bar-repo#1234
 * `FullName`: Full branch name
 * `Action`: Action type
 * `ID`: Issue ID
+* `LinkID`: Issue ID with a leading `#`
 * `Description`: Description
 
 ## Parse patterns
@@ -64,6 +65,7 @@ foo-org/bar-repo#1234
 * `FullName`: `feature/1234_foo-bar`
 * `Action`: `feature`
 * `ID`: `1234`
+* `LinkID`: `#1234`
 * `Description`: `foo-bar`
 
 ### `foo-bar`
