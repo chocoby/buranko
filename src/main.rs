@@ -1,6 +1,6 @@
 use clap::Parser;
 use git2::Repository;
-use std::io::{self, Read};
+use std::io::{self, IsTerminal, Read};
 
 mod branch;
 use branch::Branch;
@@ -63,7 +63,7 @@ fn main() {
     let args = Args::parse();
 
     // Check if input is coming from a pipe
-    let branch = if !atty::is(atty::Stream::Stdin) {
+    let branch = if !io::stdin().is_terminal() {
         // Read from stdin
         match read_from_stdin() {
             Ok(input) => Branch::parse(&input),
