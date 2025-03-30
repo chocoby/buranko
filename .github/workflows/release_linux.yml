@@ -1,0 +1,36 @@
+name: Build and upload release (linux)
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  APP_NAME: buranko
+  ARCHIVE_NAME: buranko_linux-x64.tar.gz
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build application
+        run: |
+          docker run --rm -t -v $HOME/.cargo/registry/:/root/.cargo/registry -v "$(pwd)":/volume clux/muslrust:stable cargo build --release
+
+      - name: Create archive
+        run: |
+          tar -czf $ARCHIVE_NAME -C target/x86_64-unknown-linux-musl/release $APP_NAME
+
+      - name: Upload release asset
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ env.ARCHIVE_NAME }}
+          asset_name: ${{ env.ARCHIVE_NAME }}
+          tag: ${{ github.ref }}
+          overwrite: true
+

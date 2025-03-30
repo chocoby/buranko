@@ -1,0 +1,32 @@
+name: Build and upload release (macos)
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  APP_NAME: buranko
+  ARCHIVE_NAME: buranko_macos-x64.tar.gz
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build application
+        run: |
+          cargo build --release
+          tar -czf $ARCHIVE_NAME -C target/release $APP_NAME
+
+      - name: Upload release asset
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ env.ARCHIVE_NAME }}
+          asset_name: ${{ env.ARCHIVE_NAME }}
+          tag: ${{ github.ref }}
+          overwrite: true
