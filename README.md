@@ -1,6 +1,6 @@
 # Buranko
 
-![Build Status](https://github.com/chocoby/buranko/workflows/build/badge.svg?branch=main)
+![CI Status](https://github.com/chocoby/buranko/actions/workflows/ci.yml/badge.svg)
 
 Buranko is a CLI tool for parsing and formatting Git branch names.
 
