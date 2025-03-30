@@ -1,31 +1,36 @@
-BIN := buranko
-VERBOSE_FLAG = $(if $(VERBOSE),-v)
-GOBIN ?= $(shell go env GOPATH)/bin
+.PHONY: build test clean run check format lint
 
-.PHONY: all
-all: clean build
+all: build
 
-testdeps:
-	go get -d -t $(VERBOSE_FLAG)
-
-test: testdeps
-	go test $(VERBOSE_FLAG) ./...
-
-.PHONY: test testdeps
-
-.PHONY: lint
-lint: $(GOBIN)/golint
-	go vet ./...
-	golint -set_exit_status ./...
-
-$(GOBIN)/golint:
-	cd && go get golang.org/x/lint/golint
-
-.PHONY: build
 build:
-	go build -o $(BIN)
+	cargo build
 
-.PHONY: clean
+release:
+	cargo build --release
+
+test:
+	cargo test
+
 clean:
-	rm $(BIN)
-	go clean
+	cargo clean
+
+run:
+	cargo run
+
+check:
+	cargo check
+
+format:
+	cargo fmt
+
+lint:
+	cargo clippy
+
+update:
+	cargo update
+
+install:
+	cargo install --path .
+
+uninstall:
+	cargo uninstall buranko

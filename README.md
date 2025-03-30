@@ -1,114 +1,122 @@
-# buranko
+# Buranko
 
-![Build Status](https://github.com/chocoby/buranko/workflows/build/badge.svg?branch=master)
+![Build Status](https://github.com/chocoby/buranko/workflows/build/badge.svg?branch=main)
 
-A tool for parse a git branch name
+Buranko is a CLI tool for parsing and formatting Git branch names.
+
+## Features
+
+- Git branch name parsing
+- Output formatting using templates
+- Field extraction
+
+## Installation
+
+Download a binary from [releases page](https://github.com/chocoby/buranko/releases) and place it in `$PATH` directory.
 
 ## Usage
 
-`buranko` outputs the `ID` field by default.
+### Basic Usage
 
+Display the current branch ID:
+
+```bash
+buranko
 ```
+
+### Options
+
+#### `-t, --template`
+
+Format the output using a configured template:
+
+```bash
+buranko --template
+```
+
+Template configuration:
+
+```bash
+git config buranko.template "{Action}/{ID}-{Description}"
+```
+
+Available template variables:
+
+- `{FullName}`: Full branch name
+- `{Action}`: Action (feature, bugfix, etc.)
+- `{ID}`: Branch ID
+- `{LinkID}`: Link ID (with #)
+- `{Description}`: Branch description
+
+This option is useful for referencing issues in other GitHub repositories, or for software that requires a prefix in the issue number.
+
+```bash
 $ git checkout -b feature/1234_foo-bar
-$ buranko
-1234
-```
-
-Specify an output field.
-
-```
-$ buranko -output LinkID
-#1234
-$ buranko -output Name
-foo-bar
-```
-
-Parse a branch name from stdin.
-
-```
-$ echo 'feature/1234_foo-bar' | buranko
-1234
-```
-
-## Configuration
-
-Configuration uses 'git-config' variables.
-
-***buranko.template***
-
-The template can use the values defined in the following Fields.
-
-This option is useful for pointing to issues in other GitHub repositories, or for software that requires a prefix in the issue number.
-
-```
-$ git checkout -b feature/1234_foo-bar
-$ git config buranko.template ABC-{{.ID}}
-$ buranko -template
+$ git config buranko.template ABC-{ID}
+$ buranko --template
 ABC-1234
-$ git config buranko.template foo-org/bar-repo#{{.ID}}
-$ buranko -template
+$ git config buranko.template foo-org/bar-repo#{ID}
+$ buranko --template
 foo-org/bar-repo#1234
 ```
 
-## Fields
+#### `--output <field>`
 
-* `FullName`: Full branch name
-* `Action`: Action type
-* `ID`: Issue ID
-* `LinkID`: Issue ID with a leading `#`
-* `Description`: Description
+Output only a specific field:
 
-## Parse patterns
+```bash
+buranko --output FullName
+```
 
-### `feature/1234_foo-bar`
+Available fields:
 
-* `FullName`: `feature/1234_foo-bar`
-* `Action`: `feature`
-* `ID`: `1234`
-* `LinkID`: `#1234`
-* `Description`: `foo-bar`
+- `FullName`: Full branch name
+- `Action`: Action
+- `ID`: Branch ID
+- `LinkID`: Link ID
+- `Description`: Branch description
 
-### `foo-bar`
+#### `-v, --verbose`
 
-* `FullName`: `foo-bar`
-* `Description`: `foo-bar`
+Display all branch information:
 
-More patterns at [`parser_test.go`](https://github.com/chocoby/buranko/blob/master/parser_test.go).
+```bash
+buranko --verbose
+```
+
+### Input from Pipe
+
+You can read branch names from stdin:
+
+```bash
+echo "feature/123-test" | buranko
+```
+
+## Branch Name Format
+
+Buranko parses branch names in the following format:
+
+```
+<action>/<id>-<description>
+```
+
+Examples:
+- `feature/123-add-login`
+- `bugfix/456-fix-crash`
+- `hotfix/789-security-patch`
+
+More patterns at [`main.rs`](https://github.com/chocoby/buranko/blob/main/src/main.rs).
 
 ## Integrate with `prepare-commit-msg`
 
-Add an issue ID to commit comment using git hook.
+Add an issue ID to the commit message using a git hook.
 
-`GIT-REPO/.git/hooks/prepare-commit-msg`
+`[Git repository]/.git/hooks/prepare-commit-msg`
 
-```sh
+```bash
 if [ "$2" == "" ]; then
     mv $1 $1.tmp
     echo `buranko -output LinkID -template` > $1
     cat $1.tmp >> $1
 fi
 ```
-
-## Install
-
-To install, use `go get`:
-
-```bash
-$ go get github.com/chocoby/buranko
-```
-
-Or you can download a binary from [releases page](https://github.com/chocoby/buranko/releases) and place it in `$PATH` directory.
-
-## Contribution
-
-1. Fork ([https://github.com/chocoby/buranko/fork](https://github.com/chocoby/buranko/fork))
-1. Create a feature branch
-1. Commit your changes
-1. Rebase your local changes against the master branch
-1. Run test suite with the `go test ./...` command and confirm that it passes
-1. Run `gofmt -s`
-1. Create a new Pull Request
-
-## GitHub
-
-https://github.com/chocoby/buranko
