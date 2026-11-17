@@ -44,7 +44,10 @@ impl Fixture {
             .stderr(Stdio::piped())
             .spawn()
             .unwrap();
-        child.stdin.take().unwrap().write_all(input).unwrap();
+        if let Err(error) = child.stdin.take().unwrap().write_all(input) {
+            // Argument errors can exit before reading stdin; still check the process result.
+            assert_eq!(error.kind(), std::io::ErrorKind::BrokenPipe);
+        }
         child.wait_with_output().unwrap()
     }
 }
@@ -154,7 +157,8 @@ fn template_formats_all_fields_and_preserves_unknown_placeholders() {
 
 #[test]
 fn output_field_names_remain_case_sensitive() {
-    let output = Fixture::new(false).run(&["--output", "id"], b"123");
+    // Exceed the pipe capacity to exercise early exit during input delivery.
+    let output = Fixture::new(false).run(&["--output", "id"], &vec![b'1'; 1024 * 1024]);
     assert_eq!(output.status.code(), Some(2));
     assert!(output.stdout.is_empty());
 }
