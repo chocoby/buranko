@@ -3,7 +3,9 @@ use git2::Repository;
 use std::io::{self, IsTerminal, Read};
 
 mod branch;
+mod output;
 use branch::Branch;
+use output::{OutputField, format_verbose_output, format_with_template};
 
 /// CLI tool to parse and format git branch names
 #[derive(Parser, Debug)]
@@ -14,8 +16,8 @@ struct Args {
     template: bool,
 
     /// Select output field (FullName, Action, ID, LinkID, Description)
-    #[arg(long, value_parser = ["FullName", "Action", "ID", "LinkID", "Description"], default_value = "ID")]
-    output: String,
+    #[arg(long, value_enum, default_value = "ID")]
+    output: OutputField,
 
     /// Show all branch information
     #[arg(short, long)]
@@ -40,29 +42,6 @@ fn get_template_from_config() -> Result<String, git2::Error> {
     let config = repo.config()?;
     let template = config.get_string("buranko.template").unwrap_or_default();
     Ok(template)
-}
-
-fn format_with_template(branch: &Branch, template: &str) -> String {
-    static PLACEHOLDER: std::sync::LazyLock<regex::Regex> = std::sync::LazyLock::new(|| {
-        regex::Regex::new(r"\{(FullName|Action|ID|LinkID|Description)\}").unwrap()
-    });
-    PLACEHOLDER
-        .replace_all(template, |caps: &regex::Captures<'_>| match &caps[1] {
-            "FullName" => branch.full_name.clone(),
-            "Action" => branch.action.clone(),
-            "ID" => branch.id.clone(),
-            "LinkID" => format!("#{}", branch.id),
-            "Description" => branch.description.clone(),
-            _ => unreachable!(),
-        })
-        .into_owned()
-}
-
-fn format_verbose_output(branch: &Branch) -> String {
-    format!(
-        "Full Name: {}\nAction: {}\nID: {}\nDescription: {}",
-        branch.full_name, branch.action, branch.id, branch.description
-    )
 }
 
 fn main() {
@@ -99,15 +78,7 @@ fn run(args: &Args) -> Result<(), Box<dyn std::error::Error>> {
         }
         print!("{}", format_with_template(&branch, &template));
     } else {
-        let output = match args.output.as_str() {
-            "FullName" => branch.full_name,
-            "Action" => branch.action,
-            "ID" => branch.id,
-            "LinkID" => format!("#{}", branch.id),
-            "Description" => branch.description,
-            _ => unreachable!("Invalid output field - clap should prevent this"),
-        };
-        print!("{}", output);
+        print!("{}", args.output.value(&branch));
     }
     Ok(())
 }
@@ -124,7 +95,7 @@ mod tests {
         let args = Args::try_parse_from(["buranko"]).unwrap();
 
         // Check that default value is "ID"
-        assert_eq!(args.output, "ID");
+        assert_eq!(args.output, OutputField::ID);
     }
 
     #[test]

@@ -118,3 +118,43 @@ fn output_fields_use_real_cli() {
         assert_eq!(output.stdout, expected.as_bytes());
     }
 }
+
+#[test]
+fn verbose_takes_precedence_and_keeps_trailing_newline() {
+    let output = Fixture::new(false).run(
+        &["--verbose", "--template", "--output", "Description"],
+        b"feature/123-test",
+    );
+    assert!(output.status.success());
+    assert_eq!(
+        output.stdout,
+        b"Full Name: feature/123-test\nAction: feature\nID: 123\nDescription: test\n"
+    );
+}
+
+#[test]
+fn template_formats_all_fields_and_preserves_unknown_placeholders() {
+    let fixture = Fixture::new(true);
+    git2::Repository::open(&fixture.0)
+        .unwrap()
+        .config()
+        .unwrap()
+        .set_str(
+            "buranko.template",
+            "{FullName}|{Action}|{ID}|{LinkID}|{Description}|{Unknown}",
+        )
+        .unwrap();
+    let output = fixture.run(&["--template"], b"feature/123-test");
+    assert!(output.status.success());
+    assert_eq!(
+        output.stdout,
+        b"feature/123-test|feature|123|#123|test|{Unknown}"
+    );
+}
+
+#[test]
+fn output_field_names_remain_case_sensitive() {
+    let output = Fixture::new(false).run(&["--output", "id"], b"123");
+    assert_eq!(output.status.code(), Some(2));
+    assert!(output.stdout.is_empty());
+}

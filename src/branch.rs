@@ -22,100 +22,47 @@ static JIRA_TICKET: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^([A-Z]+-(\d
 static PURE_NUMBER: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^(\d+)$").unwrap());
 
 impl Branch {
-    pub fn parse(branch_name: &str) -> Self {
-        if branch_name.is_empty() {
-            return Self::empty();
-        }
-
-        // Case 1: feature/JRA-1234-foo
-        if let Some(caps) = JIRA_FEATURE.captures(branch_name) {
-            return Self {
-                full_name: branch_name.to_string(),
-                action: caps.get(1).map_or("", |m| m.as_str()).to_string(),
-                id: caps
-                    .get(2)
-                    .and_then(|m| extract_jira_id(m.as_str()))
-                    .unwrap_or_default(),
-                description: caps.get(3).map_or("", |m| m.as_str()).to_string(),
-            };
-        }
-
-        // Case 2: feature/1234_foo or feature/1234-foo or feature/1234 or feature/foo
-        if let Some(caps) = FEATURE_BRANCH.captures(branch_name) {
-            let action = caps.get(1).map_or("", |m| m.as_str()).to_string();
-            if let Some(id) = caps.get(2) {
-                // Case: feature/1234_foo or feature/1234-foo
-                return Self {
-                    full_name: branch_name.to_string(),
-                    action,
-                    id: id.as_str().to_string(),
-                    description: caps.get(3).map_or("", |m| m.as_str()).to_string(),
-                };
-            } else if let Some(pure_id) = caps.get(4) {
-                // Case: feature/1234
-                return Self {
-                    full_name: branch_name.to_string(),
-                    action,
-                    id: pure_id.as_str().to_string(),
-                    description: String::new(),
-                };
-            } else {
-                // Case: feature/foo
-                return Self {
-                    full_name: branch_name.to_string(),
-                    action,
-                    id: String::new(),
-                    description: caps.get(5).map_or("", |m| m.as_str()).to_string(),
-                };
-            }
-        }
-
-        // Case 3: #1234-foo-bar
-        if let Some(caps) = TICKET_REF.captures(branch_name) {
-            return Self {
-                full_name: branch_name.to_string(),
-                action: String::new(),
-                id: caps.get(1).map_or("", |m| m.as_str()).to_string(),
-                description: caps.get(2).map_or("", |m| m.as_str()).to_string(),
-            };
-        }
-
-        // Case 4: JRA-1234
-        if let Some(caps) = JIRA_TICKET.captures(branch_name) {
-            return Self {
-                full_name: branch_name.to_string(),
-                action: String::new(),
-                id: caps.get(2).map_or("", |m| m.as_str()).to_string(),
-                description: String::new(),
-            };
-        }
-
-        // Case 5: Pure number
-        if let Some(caps) = PURE_NUMBER.captures(branch_name) {
-            return Self {
-                full_name: branch_name.to_string(),
-                action: String::new(),
-                id: caps.get(1).map_or("", |m| m.as_str()).to_string(),
-                description: String::new(),
-            };
-        }
-
-        // Case 6: Simple text
+    fn new(full_name: &str, action: &str, id: &str, description: &str) -> Self {
         Self {
-            full_name: branch_name.to_string(),
-            action: String::new(),
-            id: String::new(),
-            description: branch_name.to_string(),
+            full_name: full_name.to_string(),
+            action: action.to_string(),
+            id: id.to_string(),
+            description: description.to_string(),
         }
     }
 
-    fn empty() -> Self {
-        Self {
-            full_name: String::new(),
-            action: String::new(),
-            id: String::new(),
-            description: String::new(),
+    pub fn parse(branch_name: &str) -> Self {
+        // Match specific JIRA branches before the general action/name pattern.
+        if let Some(caps) = JIRA_FEATURE.captures(branch_name) {
+            let id = extract_jira_id(&caps[2]).unwrap_or_default();
+            return Self::new(branch_name, &caps[1], &id, &caps[3]);
         }
+
+        if let Some(caps) = FEATURE_BRANCH.captures(branch_name) {
+            let id = caps
+                .get(2)
+                .or_else(|| caps.get(4))
+                .map_or("", |m| m.as_str());
+            let description = caps
+                .get(3)
+                .or_else(|| caps.get(5))
+                .map_or("", |m| m.as_str());
+            return Self::new(branch_name, &caps[1], id, description);
+        }
+
+        if let Some(caps) = TICKET_REF.captures(branch_name) {
+            return Self::new(branch_name, "", &caps[1], &caps[2]);
+        }
+
+        if let Some(caps) = JIRA_TICKET.captures(branch_name) {
+            return Self::new(branch_name, "", &caps[2], "");
+        }
+
+        if let Some(caps) = PURE_NUMBER.captures(branch_name) {
+            return Self::new(branch_name, "", &caps[1], "");
+        }
+
+        Self::new(branch_name, "", "", branch_name)
     }
 }
 
