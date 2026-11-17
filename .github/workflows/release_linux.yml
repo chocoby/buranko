@@ -1,9 +1,18 @@
 name: Build and upload release (linux)
 
 on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to build
+        required: true
+        type: string
   push:
     tags:
       - 'v*'
+
+permissions:
+  contents: write
 
 env:
   APP_NAME: buranko
@@ -16,10 +25,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ inputs.tag && format('refs/tags/{0}', inputs.tag) || github.ref }}
 
       - name: Build application
         run: |
-          docker run --rm -t -v "$HOME/.cargo/registry/:/root/.cargo/registry" -v "$(pwd)":/volume clux/muslrust:1.100.0 cargo build --locked --release
+          docker run --rm -t -v "$HOME/.cargo/registry/:/root/.cargo/registry" -v "$(pwd)":/volume clux/muslrust:1.100.0-stable cargo build --locked --release
 
       - name: Create archive
         run: |
@@ -31,6 +42,6 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ env.ARCHIVE_NAME }}
           asset_name: ${{ env.ARCHIVE_NAME }}
-          tag: ${{ github.ref }}
+          tag: ${{ inputs.tag || github.ref }}
           overwrite: true
 
