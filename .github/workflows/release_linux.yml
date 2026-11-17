@@ -15,18 +15,18 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Build application
         run: |
-          docker run --rm -t -v $HOME/.cargo/registry/:/root/.cargo/registry -v "$(pwd)":/volume clux/muslrust:1.100.0 cargo build --locked --release
+          docker run --rm -t -v "$HOME/.cargo/registry/:/root/.cargo/registry" -v "$(pwd)":/volume clux/muslrust:1.100.0 cargo build --locked --release
 
       - name: Create archive
         run: |
-          tar -czf $ARCHIVE_NAME -C target/x86_64-unknown-linux-musl/release $APP_NAME
+          tar -czf "$ARCHIVE_NAME" -C target/x86_64-unknown-linux-musl/release "$APP_NAME"
 
       - name: Upload release asset
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@2.11.5
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ env.ARCHIVE_NAME }}

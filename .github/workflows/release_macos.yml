@@ -23,19 +23,19 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Install Rust
-        uses: jdx/mise-action@v3
+        uses: jdx/mise-action@v5.2.9
 
       - name: Build application
         run: |
           rustup target add ${{ matrix.target }}
           cargo build --locked --release --target ${{ matrix.target }}
-          tar -czf $ARCHIVE_NAME -C target/${{ matrix.target }}/release $APP_NAME
+          tar -czf "$ARCHIVE_NAME" -C target/${{ matrix.target }}/release "$APP_NAME"
 
       - name: Upload release asset
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@2.11.5
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ env.ARCHIVE_NAME }}
