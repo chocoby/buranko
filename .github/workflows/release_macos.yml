@@ -7,20 +7,32 @@ on:
 
 env:
   APP_NAME: buranko
-  ARCHIVE_NAME: buranko_macos-x64.tar.gz
 
 jobs:
   build:
-    runs-on: macos-latest
+    strategy:
+      matrix:
+        include:
+          - target: aarch64-apple-darwin
+            arch: arm64
+          - target: x86_64-apple-darwin
+            arch: x64
+    runs-on: macos-15
+    env:
+      ARCHIVE_NAME: buranko_macos-${{ matrix.arch }}.tar.gz
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install Rust
+        uses: jdx/mise-action@v3
+
       - name: Build application
         run: |
-          cargo build --release
-          tar -czf $ARCHIVE_NAME -C target/release $APP_NAME
+          rustup target add ${{ matrix.target }}
+          cargo build --locked --release --target ${{ matrix.target }}
+          tar -czf $ARCHIVE_NAME -C target/${{ matrix.target }}/release $APP_NAME
 
       - name: Upload release asset
         uses: svenstaro/upload-release-action@v2

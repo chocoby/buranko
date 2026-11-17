@@ -43,13 +43,19 @@ fn get_template_from_config() -> Result<String, git2::Error> {
 }
 
 fn format_with_template(branch: &Branch, template: &str) -> String {
-    let mut result = template.to_string();
-    result = result.replace("{FullName}", &branch.full_name);
-    result = result.replace("{Action}", &branch.action);
-    result = result.replace("{ID}", &branch.id);
-    result = result.replace("{LinkID}", &format!("#{}", &branch.id));
-    result = result.replace("{Description}", &branch.description);
-    result
+    static PLACEHOLDER: std::sync::LazyLock<regex::Regex> = std::sync::LazyLock::new(|| {
+        regex::Regex::new(r"\{(FullName|Action|ID|LinkID|Description)\}").unwrap()
+    });
+    PLACEHOLDER
+        .replace_all(template, |caps: &regex::Captures<'_>| match &caps[1] {
+            "FullName" => branch.full_name.clone(),
+            "Action" => branch.action.clone(),
+            "ID" => branch.id.clone(),
+            "LinkID" => format!("#{}", branch.id),
+            "Description" => branch.description.clone(),
+            _ => unreachable!(),
+        })
+        .into_owned()
 }
 
 fn format_verbose_output(branch: &Branch) -> String {
@@ -62,43 +68,36 @@ fn format_verbose_output(branch: &Branch) -> String {
 fn main() {
     let args = Args::parse();
 
-    // Check if input is coming from a pipe
-    let branch = if !io::stdin().is_terminal() {
-        // Read from stdin
-        match read_from_stdin() {
-            Ok(input) => Branch::parse(&input),
-            Err(e) => {
-                eprintln!("Failed to read from stdin: {}", e);
-                return;
-            }
-        }
+    if let Err(error) = run(&args) {
+        eprintln!("{error}");
+        std::process::exit(1);
+    }
+}
+
+fn run(args: &Args) -> Result<(), Box<dyn std::error::Error>> {
+    let input = if io::stdin().is_terminal() {
+        String::new()
     } else {
-        // Get current git branch
-        match get_current_branch() {
-            Ok(branch) => branch,
-            Err(e) => {
-                eprintln!("Failed to get branch name: {}", e);
-                return;
-            }
-        }
+        read_from_stdin().map_err(|e| format!("Failed to read from stdin: {e}"))?
+    };
+    let branch = if input.is_empty() {
+        get_current_branch().map_err(|e| format!("Failed to get branch name: {e}"))?
+    } else {
+        Branch::parse(&input)
     };
 
     if args.verbose {
         println!("{}", format_verbose_output(&branch));
     } else if args.template {
-        match get_template_from_config() {
-            Ok(template) => {
-                if !template.is_empty() {
-                    let formatted = format_with_template(&branch, &template);
-                    print!("{}", formatted);
-                } else {
-                    println!(
-                        "No template configured. Use 'git config buranko.template' to set a template."
-                    );
-                }
-            }
-            Err(e) => eprintln!("Failed to get template: {}", e),
+        let template =
+            get_template_from_config().map_err(|e| format!("Failed to get template: {e}"))?;
+        if template.is_empty() {
+            return Err(
+                "No template configured. Use 'git config buranko.template' to set a template."
+                    .into(),
+            );
         }
+        print!("{}", format_with_template(&branch, &template));
     } else {
         let output = match args.output.as_str() {
             "FullName" => branch.full_name,
@@ -110,42 +109,12 @@ fn main() {
         };
         print!("{}", output);
     }
+    Ok(())
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test_args_output_field() {
-        let test_branch = Branch {
-            full_name: "feature/123-test".to_string(),
-            action: "feature".to_string(),
-            id: "123".to_string(),
-            description: "test".to_string(),
-        };
-
-        // Test each output field
-        let cases = vec![
-            ("FullName", "feature/123-test"),
-            ("Action", "feature"),
-            ("ID", "123"),
-            ("LinkID", "#123"),
-            ("Description", "test"),
-        ];
-
-        for (field, expected) in cases {
-            let output = match field {
-                "FullName" => test_branch.full_name.clone(),
-                "Action" => test_branch.action.clone(),
-                "ID" => test_branch.id.clone(),
-                "LinkID" => format!("#{}", test_branch.id),
-                "Description" => test_branch.description.clone(),
-                _ => panic!("Invalid test case"),
-            };
-            assert_eq!(output, expected);
-        }
-    }
 
     #[test]
     fn test_default_output_field() {

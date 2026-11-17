@@ -105,7 +105,7 @@ Examples:
 - `bugfix/456-fix-crash`
 - `hotfix/789-security-patch`
 
-More patterns at [`main.rs`](https://github.com/chocoby/buranko/blob/main/src/main.rs).
+More patterns at [`branch.rs`](src/branch.rs).
 
 ## Integrate with `prepare-commit-msg`
 
@@ -114,9 +114,34 @@ Add an issue ID to the commit message using a git hook.
 `[Git repository]/.git/hooks/prepare-commit-msg`
 
 ```bash
-if [ "$2" == "" ]; then
-    mv $1 $1.tmp
-    echo `buranko -output LinkID -template` > $1
-    cat $1.tmp >> $1
+#!/bin/sh
+if [ -z "$2" ]; then
+    issue=$(buranko --output LinkID) || exit 1
+    if [ -n "$issue" ] && [ "$issue" != "#" ]; then
+        { printf '%s\n' "$issue"; cat "$1"; } > "$1.tmp" || exit 1
+        mv "$1.tmp" "$1"
+    fi
 fi
 ```
+
+For configured issue prefixes, replace `buranko --output LinkID` in the hook
+with `buranko --template`.
+
+## Development
+
+Install [mise](https://mise.jdx.dev/), then run:
+
+```bash
+mise install
+mise exec -- cargo test --locked
+mise exec -- cargo fmt --all -- --check
+mise exec -- cargo clippy --locked --all-targets -- -D warnings
+```
+
+`mise.toml` pins Rust 1.100.0. CI also tests the latest stable Rust.
+Linux releases use the matching muslrust image; macOS releases target both Apple Silicon
+(`aarch64-apple-darwin`) and Intel (`x86_64-apple-darwin`), and Windows releases target x64.
+
+Empty stdin falls back to the current Git branch. Non-empty piped input is parsed
+as a branch name. Runtime errors and missing templates are reported on stderr
+with a non-zero exit status.

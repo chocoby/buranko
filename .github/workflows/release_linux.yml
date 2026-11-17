@@ -19,7 +19,7 @@ jobs:
 
       - name: Build application
         run: |
-          docker run --rm -t -v $HOME/.cargo/registry/:/root/.cargo/registry -v "$(pwd)":/volume clux/muslrust:stable cargo build --release
+          docker run --rm -t -v $HOME/.cargo/registry/:/root/.cargo/registry -v "$(pwd)":/volume clux/muslrust:1.100.0 cargo build --locked --release
 
       - name: Create archive
         run: |
